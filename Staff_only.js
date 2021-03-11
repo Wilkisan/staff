@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         "Staff only"
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      1.2
 // @description  !
 // @author       You
 // @match        https://www.rusprofile.ru/*
@@ -11,11 +11,13 @@
 let inpSerch = document.getElementsByName("query")[0];
 let btnSerh = document.querySelector(".search-btn");
 let kWords = ["Антонова Галина Николаевна","Аткельтирова Гузель Булатовна","Антохин Александр Николаевич"];
+
 let capcha = document.querySelector('.recaptcha-checkbox-border');
 let i = 0;
-let num = 2;
+let num = 1;
 let match = 0;
 let nameCoo = 0;
+let empty = document.querySelector(".emptyresult");
 
 function getCookie(name) {
     let match = document.cookie
@@ -24,7 +26,7 @@ function getCookie(name) {
     return match ? match.split('=')[1] : undefined;
 }
 if(btnSerh != null && num == getCookie(nameCoo)) {
-    num = +(getCookie(nameCoo)) + 1;
+    num = (getCookie(nameCoo)) + 1;
 }
 
 let kWord=kWords[num];
@@ -41,14 +43,12 @@ if (btnSerh != null) {
     let dataTags = document.getElementsByTagName("a");
     for (i = 0; i < dataTags.length; i++) {
         if (dataTags[i].outerText == 'ИП '+ kWord) {
-            dataTags[i][0].click();
+            dataTags[i].click();
             document.cookie = `nameCoo=${num}`;
             console.log(kWord);
             location.href = "https://www.rusprofile.ru/";
             break;
-        }if (document.querySelector(".warning-text").outerText == "ИП ликвидирован") {
-            location.href = "https://www.rusprofile.ru/";
-        if (document.querySelector('.emptyresult').outerText.startsWith("Только действующие") == true){
+        } else {
             location.href = "https://www.rusprofile.ru/";
         }if (capcha == true) {
             document.querySelector('.recaptcha-checkbox-border').click();
