@@ -15,7 +15,7 @@ let capcha = document.querySelector('.recaptcha-checkbox-border');
 let i = 0;
 let num = 2;
 let match = 0;
-
+let nameCoo = 0;
 
 function getCookie(name) {
     let match = document.cookie
