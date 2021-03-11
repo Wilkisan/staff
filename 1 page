@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         "Staff"
+// @name         "Staff only"
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  !
 // @author       You
 // @match        https://www.rusprofile.ru/*
@@ -10,14 +10,24 @@
 
 let inpSerch = document.getElementsByName("query")[0];
 let btnSerh = document.querySelector(".search-btn");
-let kWords = ["Аткельтирова Гузель Булатовна","Антохин Александр Николаевич","Андреева Татьяна Николаевна"]
-let kWord = kWords[nextNum()];
+let kWords = ["Антонова Галина Николаевна","Аткельтирова Гузель Булатовна","Антохин Александр Николаевич"];
+let capcha = document.querySelector('.recaptcha-checkbox-border');
 let i = 0;
+let num = 2;
+let match = 0;
 
-function nextNum() {
-    while (i < kWords.length);
-    i++;
+
+function getCookie(name) {
+    let match = document.cookie
+    .split(';')
+    .find(row => row.startsWith(`${name}=`));
+    return match ? match.split('=')[1] : undefined;
 }
+if(btnSerh != null && num == getCookie(nameCoo)) {
+    num = +(getCookie(nameCoo)) + 1;
+}
+
+let kWord=kWords[num];
 
 if (btnSerh != null) {
     let timerId = setInterval(()=> {
@@ -30,11 +40,19 @@ if (btnSerh != null) {
 } else {
     let dataTags = document.getElementsByTagName("a");
     for (i = 0; i < dataTags.length; i++) {
-        if (dataTags[i].innerText == 'ИП '+ kWord) {
-            dataTags[i].click();
+        if (dataTags[i].outerText == 'ИП '+ kWord) {
+            dataTags[i][0].click();
+            document.cookie = `nameCoo=${num}`;
+            console.log(kWord);
+            location.href = "https://www.rusprofile.ru/";
             break;
+        }if (document.querySelector(".warning-text").outerText == "ИП ликвидирован") {
+            location.href = "https://www.rusprofile.ru/";
+        if (document.querySelector('.emptyresult').outerText.startsWith("Только действующие") == true){
+            location.href = "https://www.rusprofile.ru/";
+        }if (capcha == true) {
+            document.querySelector('.recaptcha-checkbox-border').click();
         }
     }
 }
-
 
