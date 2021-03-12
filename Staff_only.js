@@ -14,24 +14,23 @@ let kWords = ["Антонова Галина Николаевна","Аткель
 
 let capcha = document.querySelector('.recaptcha-checkbox-border');
 let i = 0;
-let num = 1;
-let match = 0;
-let nameCoo = 0;
+let match;
 let empty = document.querySelector(".emptyresult");
 
 function getCookie(name) {
     let match = document.cookie
-    .split(';')
+    .split('; ')
     .find(row => row.startsWith(`${name}=`));
     return match ? match.split('=')[1] : undefined;
 }
-if(btnSerh != null && num == getCookie(nameCoo)) {
-    num = (getCookie(nameCoo)) + 1;
+function setCookie(name, value) {
+    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 }
 
-let kWord=kWords[num];
+let kWord=kWords[getCookie('nameCoo')];
 
 if (btnSerh != null) {
+    console.log(getCookie('nameCoo'))
     let timerId = setInterval(()=> {
         inpSerch.value += kWord[i++];
         if (i == kWord.length) {
@@ -43,13 +42,14 @@ if (btnSerh != null) {
     let dataTags = document.getElementsByTagName("a");
     for (i = 0; i < dataTags.length; i++) {
         if (dataTags[i].outerText == 'ИП '+ kWord) {
+            setCookie('nameCoo', +getCookie('nameCoo')+1);
             dataTags[i].click();
-            document.cookie = `nameCoo=${num}`;
-            console.log(kWord);
-            location.href = "https://www.rusprofile.ru/";
+            location.href = "https://www.rusprofile.ru/"; // здесь будет fetch в MySQL
             break;
         } else {
+            setCookie('nameCoo', +getCookie('nameCoo')+1);
             location.href = "https://www.rusprofile.ru/";
+            break;
         }if (capcha == true) {
             document.querySelector('.recaptcha-checkbox-border').click();
         }
