@@ -10,8 +10,7 @@
 
 let inpSerch = document.getElementsByName("query")[0];
 let btnSerh = document.querySelector(".search-btn");
-let kWords = ["Антонова Галина Николаевна","Аткельтирова Гузель Булатовна","Антохин Александр Николаевич"];
-
+let kWords = ["Антонова Галина Николаевна","Аткельтирова Гузель Булатовна"];
 let capcha = document.querySelector('.recaptcha-checkbox-border');
 let i = 0;
 let match;
@@ -27,7 +26,7 @@ function setCookie(name, value) {
     document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 }
 
-let kWord=kWords[getCookie('nameCoo')];
+let kWord=kWords[0];
 
 if (btnSerh != null) {
     console.log(getCookie('nameCoo'))
@@ -43,12 +42,23 @@ if (btnSerh != null) {
     for (i = 0; i < dataTags.length; i++) {
         if (dataTags[i].outerText == 'ИП '+ kWord) {
             setCookie('nameCoo', +getCookie('nameCoo')+1);
-            dataTags[i].click();
-            location.href = "https://www.rusprofile.ru/"; // здесь будет fetch в MySQL
+            let links = dataTags[i].href;
+            sendForm(kWord, links);
+            async function sendForm(name1, name2){
+                let formData = new FormData(kWord, links)
+                let response = await fetch("http://rabota0f.beget.tech/work.php",{
+                    method: "POST",
+                    body: formData
+                });
+                let result = await response.text();
+                if(result == "success"){
+                    console.log('success');
+                }
+            }
             break;
         } else {
             setCookie('nameCoo', +getCookie('nameCoo')+1);
-            location.href = "https://www.rusprofile.ru/";
+            //location.href = "https://www.rusprofile.ru/";
             break;
         }if (capcha == true) {
             document.querySelector('.recaptcha-checkbox-border').click();
