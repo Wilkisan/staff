@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         "Staff only"
+// @name         "General variant"
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      3.0
 // @description  !
 // @author       You
 // @match        https://www.rusprofile.ru/*
@@ -10,7 +10,7 @@
 
 let inpSerch = document.getElementsByName("query")[0];
 let btnSerh = document.querySelector(".search-btn");
-let kWords = ["Антонова Галина Николаевна","Аткельтирова Гузель Булатовна"];
+let kWords = ["Антонова Галина Николаевна","Аткельтирова Гузель Булатовна"]
 let capcha = document.querySelector('.recaptcha-checkbox-border');
 let i = 0;
 let match;
@@ -26,7 +26,7 @@ function setCookie(name, value) {
     document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}`;
 }
 
-let kWord=kWords[0];
+let kWord=kWords[getCookie('nameCoo')];
 
 if (btnSerh != null) {
     console.log(getCookie('nameCoo'))
@@ -41,26 +41,31 @@ if (btnSerh != null) {
     let dataTags = document.getElementsByTagName("a");
     for (i = 0; i < dataTags.length; i++) {
         if (dataTags[i].outerText == 'ИП '+ kWord) {
-            setCookie('nameCoo', +getCookie('nameCoo')+1);
             let links = dataTags[i].href;
-            sendForm(kWord, links);
-            async function sendForm(name1, name2){
-                let formData = new FormData(kWord, links)
-                let response = await fetch("http://rabota0f.beget.tech/work.php",{
-                    method: "POST",
-                    body: formData
-                });
-                let result = await response.text();
-                if(result == "success"){
-                    console.log('success');
+            console.log("ССЫЛКИ НА ЭТОГО ЧЕЛОВЕКА  "+dataTags[i].href);
+            //setCookie('nameCoo', +getCookie('nameCoo')+1);
+            let id_product = kWord;
+            let qty_product = links;
+            let data_body = "id_product=" + id_product + "&qty_product="+ qty_product;
+            fetch("https://onlinbar.ru/php/test.php", {
+                method: "POST",
+                body: data_body,
+                headers:{"content-type": "application/x-www-form-urlencoded"}
+            })
+
+                .then( (response) => {
+                if (response.status !== 200) {
+                    return Promise.reject();
                 }
-            }
-            break;
-        } else {
-            setCookie('nameCoo', +getCookie('nameCoo')+1);
+                return response.text()
+            })
+                .then(i => console.log(i))
+                .catch(() => console.log('ошибка'));
+        }else {
+            //setCookie('nameCoo', +getCookie('nameCoo')+1);
             //location.href = "https://www.rusprofile.ru/";
             break;
-        }if (capcha == true) {
+        }if (capcha == true){
             document.querySelector('.recaptcha-checkbox-border').click();
         }
     }
